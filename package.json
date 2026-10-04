@@ -15,8 +15,13 @@
   "type": "commonjs",
   "main": "eslint.config.js",
   "scripts": {
-     "start": "node ./src/server.js",
+    "start": "node ./src/server.js",
     "pretest": "eslint ./src --fix",
     "test": "echo \"Tests complete\""
+  },
+  "devDependencies": {
+    "@eslint/js": "^10.0.1",
+    "eslint": "^10.12.0",
+    "globals": "^17.13.0"
   }
 }

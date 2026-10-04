@@ -10,6 +10,7 @@ const urlStruct = {
     '/style.css': htmlHandler.getCSS,
     '/catchEmAll': jsonHandler.respondJSON,
     '/notReal': jsonHandler.respondJSON,
+    "/getTypes": jsonHandler.getTypes,
     notFound: jsonHandler.respondJSON
 };
 
