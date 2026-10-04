@@ -1,0 +1,22 @@
+{
+  "name": "igme-430-project-1",
+  "version": "1.0.0",
+  "description": "",
+  "homepage": "https://github.com/TheSeventhStone/igme-430-project-1#readme",
+  "bugs": {
+    "url": "https://github.com/TheSeventhStone/igme-430-project-1/issues"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/TheSeventhStone/igme-430-project-1.git"
+  },
+  "license": "ISC",
+  "author": "SGFL",
+  "type": "commonjs",
+  "main": "eslint.config.js",
+  "scripts": {
+     "start": "node ./src/server.js",
+    "pretest": "eslint ./src --fix",
+    "test": "echo \"Tests complete\""
+  }
+}

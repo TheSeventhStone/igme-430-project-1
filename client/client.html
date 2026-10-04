@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <title>Our simple HTTP server</title>
+  <link rel="stylesheet" type="text/css" href="/style.css">
+
+  <script>
+    const statusStrings = {
+      200: `<b>Success</b>`,
+      201: `<b>Created</b>`,
+      204: `<b>Updated (No Content)</b>`,
+      400: `<b>Bad Request</b>`,
+      404: `<b>Not Found</b>`
+    }
+
+    const handleResponse = async (response, parseResponse) => {
+      const content = document.querySelector('#content');
+
+      if (statusStrings[response.status] === undefined) {
+        content.innerHTML = `Error code not implemented by client.`;
+      } else {
+        content.innerHTML = statusStrings[response.status];
+      }
+
+      // Don't try to parse 204 body - it's blank
+      if (response.status !== 204) {
+        if (parseResponse) {
+          let obj = await response.json();
+          console.log(obj);
+          let jsonString = JSON.stringify(obj);
+          if(response.status !== 200){
+            content.innerHTML += `<p>Message: ${obj.message}</p>`;
+          }
+          else{
+            content.innerHTML += `<p>${jsonString}</p>`;
+          }
+        }
+      }
+    };
+
+
+    const requestUpdate = async (userForm) => {
+      const url = userForm.querySelector('#urlField').value;
+      const method = userForm.querySelector('#methodSelect').value;
+
+      // /getUsers get or smthn like it
+      console.log(url, method);
+
+      let response = await fetch(url, {
+        method,
+        headers: {
+          'Accept': 'application/json'
+        },
+      });
+
+      // parse if get
+      handleResponse(response, method === 'get');
+    }
+
+    const sendPost = async (nameForm) => {
+      const url = nameForm.getAttribute('action');
+      const method = nameForm.getAttribute('method');
+
+      const name = nameForm.querySelector('#nameField').value;
+      const age = nameForm.querySelector('#ageField').value;
+
+      let formData = JSON.stringify({ name, age });
+
+      console.log(formData);
+
+      const response = await fetch(url, {
+        method: method,
+        headers: {
+          'Content-Type': 'application/json',
+          'Content-Length': formData.length,
+          'Accept': 'application/json'
+        },
+        body: formData,
+      });
+
+      handleResponse(response, true);
+    }
+
+    const init = () => {
+      const getForm = document.querySelector('#userForm');
+      const addForm = document.querySelector('#nameForm');
+
+      const getUsers = (e) => {
+        e.preventDefault();
+        requestUpdate(userForm);
+        return false;
+      }
+
+      getForm.addEventListener('submit', getUsers);
+
+      const nameForm = document.querySelector('#nameForm');
+
+      const addUser = (e) => {
+        e.preventDefault();
+        sendPost(nameForm);
+        return false;
+      }
+
+      nameForm.addEventListener('submit', addUser);
+    }
+
+    window.onload = init;
+  </script>
+</head>
+
+<body>
+  <section id="top">
+    <h3>POST Status Code Tests</h3>
+    <form id="nameForm" action="/addUser" method="post">
+      <label for="name">Name: </label>
+      <input id="nameField" type="text" name="name" />
+      <label for="age">Age: </label>
+      <input id="ageField" type="number" name="age" min="0" max="100" step="1" />
+      <input type="submit" value="Add User" />
+    </form>
+    <form id="userForm" action="/getUsers" method="get">
+      <select id='urlField'>
+        <option value='/getUsers'>/getUsers</option>
+        <option value='/notReal'>/notReal</option>
+      </select>
+      <select id="methodSelect">
+        <option value="get">GET</option>
+        <option value="head">HEAD</option>
+      </select>
+      <input type="submit" value="Get User" />
+    </form>
+  </section>
+  <section id="content">
+  </section>
+</body>
+
+</html>
