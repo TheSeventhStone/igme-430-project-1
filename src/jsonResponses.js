@@ -108,7 +108,7 @@ const getTypes = (request,response) => {
     responseJSON.id = 'failedParams';
      return responseHandler.serveFile(request, response, JSON.stringify(responseJSON), "application/json", 400);
   }
-  filteredDex = typeFilter(type,secType);
+  let filteredDex = typeFilter(type,secType);
   if(filteredDex.length > 0){
     return responseHandler.serveFile(request, response, JSON.stringify(filteredDex), "application/json", 200);
   }
@@ -199,7 +199,7 @@ const typeFilter = (type,secType, set=dex) => {
 const nameFilter = (name, set=dex) => {
   let filteredDex = [];
   //filters dex entries for names containing name parameter (not case-sensitive)
-  dex.forEach((element) => {if(element.name.toLowerCase().includes(name.toLowerCase())){filteredDex.push(element);}});
+  set.forEach((element) => {if(element.name.toLowerCase().includes(name.toLowerCase())){filteredDex.push(element);}});
   return filteredDex;
 }
 
