@@ -12,6 +12,7 @@ const urlStruct = {
     '/notReal': jsonHandler.respondJSON,
     "/getTypes": jsonHandler.getTypes,
     "/dexNav": jsonHandler.dexNav,
+    "/catchEm": jsonHandler.catchEm,
     notFound: jsonHandler.respondJSON
 };
 

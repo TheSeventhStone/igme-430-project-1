@@ -46,6 +46,7 @@ const respondJSON = (request, response) => {
     responseHandler.serveFile(request, response, content, 'application/json', code);
 };
 
+
 const addUser = (request, response) => {
   const {num, name, img, type, height, weight, weaknesses, next_evolution} = request.body;
 
@@ -107,19 +108,7 @@ const getTypes = (request,response) => {
     responseJSON.id = 'failedParams';
      return responseHandler.serveFile(request, response, JSON.stringify(responseJSON), "application/json", 400);
   }
-  let filteredDex = [];
-  let secondFilterDex = [];
-  //creates proper string for filtering
-  const properType = properNoun(type);
-  console.log(properType);
-  dex.forEach((element) => {if(element.type.includes(properType)){filteredDex.push(element)};});
-  //handles optional second type filtering
-  if(secType != null){
-    const properSecType = properNoun(secType);
-    console.log(properSecType);
-    filteredDex.forEach((element) => {if(element.type.includes(properSecType)){secondFilterDex.push(element)};});
-    filteredDex = secondFilterDex;
-  }
+  filteredDex = typeFilter(type,secType);
   if(filteredDex.length > 0){
     return responseHandler.serveFile(request, response, JSON.stringify(filteredDex), "application/json", 200);
   }
@@ -138,13 +127,49 @@ const dexNav = (request,response) => {
   const name = params.get("name");
   console.log(name);
 
-  let filteredDex = [];
-  //filters dex entries for names containing name parameter (not case-sensitive)
-  dex.forEach((element) => {if(element.name.toLowerCase().includes(name.toLowerCase())){filteredDex.push(element);}});
+  let filteredDex = nameFilter(name);
    if(filteredDex.length > 0){
     return responseHandler.serveFile(request, response, JSON.stringify(filteredDex), "application/json", 200);
   }
   return responseHandler.serveFile(request, response, JSON.stringify(responseJSON), "application/json", 200);
+}
+
+const catchEm = (request, response) => {
+  const responseJSON = {
+    message: 'No such Pokemon in the Pokedex.',
+  };
+  //extracts search parameters from URL
+  const reqURL = new URL(request.url, `http://${request.headers.host}`);
+  const params = reqURL.searchParams;
+  const name = params.get("name");
+  const type = params.get("type");
+  const secType = params.get("secType");
+
+  //checks for empty parameters
+  if(name == null && type == null && secType == null){
+     return responseHandler.serveFile(request, response, JSON.stringify(dex), "application/json", 200);
+  }
+  //handles query filters
+  let filteredDex = [];
+  if(name != null){
+    filteredDex = nameFilter(name);
+  }
+  if (type != null && filteredDex.length == 0){
+    filteredDex = typeFilter(type,secType);
+    console.log("second if failed");
+  }
+  //handles additional filters
+  if(type != null){
+    filteredDex = typeFilter(type,secType,filteredDex);
+  }
+
+
+  if(filteredDex.length > 0){
+    return responseHandler.serveFile(request, response, JSON.stringify(filteredDex), "application/json", 200);
+  }
+  return responseHandler.serveFile(request, response, JSON.stringify(responseJSON), "application/json", 200);
+
+
 }
 
 const properNoun = (str) => {
@@ -154,10 +179,34 @@ const properNoun = (str) => {
   return firstCap + restOfWord;
   
 }
+const typeFilter = (type,secType, set=dex) => {
+   let filteredDex = [];
+  let secondFilterDex = [];
+  //creates proper string for filtering
+  const properType = properNoun(type);
+  console.log(properType);
+  set.forEach((element) => {if(element.type.includes(properType)){filteredDex.push(element)};});
+  //handles optional second type filtering
+  if(secType != null){
+    const properSecType = properNoun(secType);
+    console.log(properSecType);
+    filteredDex.forEach((element) => {if(element.type.includes(properSecType)){secondFilterDex.push(element)};});
+    filteredDex = secondFilterDex;
+  }
+  return filteredDex;
+}
+
+const nameFilter = (name, set=dex) => {
+  let filteredDex = [];
+  //filters dex entries for names containing name parameter (not case-sensitive)
+  dex.forEach((element) => {if(element.name.toLowerCase().includes(name.toLowerCase())){filteredDex.push(element);}});
+  return filteredDex;
+}
 
 module.exports = {
   addUser,
   respondJSON,
   getTypes,
-  dexNav
+  dexNav,
+  catchEm
 };

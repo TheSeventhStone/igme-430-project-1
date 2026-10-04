@@ -102,6 +102,36 @@
       // parse if get
       handleResponse(response, method === 'get');
     }
+    const requestCatch = async (catchForm) => {
+      const url = catchForm.querySelector('#ceUrlField').value;
+      const method = catchForm.querySelector('#ceMethodSelect').value;
+      const name = catchForm.querySelector("#ceNameField").value;
+      const type = catchForm.querySelector("#ceTypeField").value;
+      const secType = catchForm.querySelector("#ceSecTypeField").value;
+
+      console.log(url, method);
+      let fullUrl = url+ "?";
+      if(name.length > 0){
+        fullUrl+= `name=${name}`;
+      }
+      if(type.length > 0){
+        fullUrl+= `&type=${type}`;
+      }
+      if(secType.length > 0){
+        fullUrl+= `&secType=${secType}`;
+      }
+      console.log(fullUrl);
+
+      let response = await fetch(fullUrl, {
+        method,
+        headers: {
+          'Accept': 'application/json'
+        },
+      });
+
+      // parse if get
+      handleResponse(response, method === 'get');
+    }
 
     const sendPost = async (nameForm) => {
       const url = nameForm.getAttribute('action');
@@ -169,6 +199,16 @@
       }
 
       navForm.addEventListener("submit", navs);
+
+      const catchForm = document.querySelector("#ce");
+
+      const catches = (e) => {
+        e.preventDefault();
+        requestCatch(catchForm);
+        return false;
+      }
+
+      catchForm.addEventListener("submit",catches);
     }
 
     window.onload = init;
@@ -187,7 +227,7 @@
         <option value="get">GET</option>
         <option value="head">HEAD</option>
       </select>
-      <input type="submit" value="Get User" />
+      <input type="submit" value="Get Dex" />
     </form>
     <h3>GetTypes Test</h3>
      <form id="typeForm" action="/getTypes" method="get">
@@ -203,21 +243,39 @@
         <option value="get">GET</option>
         <option value="head">HEAD</option>
       </select>
-      <input type="submit" value="Get User" />
+      <input type="submit" value="Get Pokemon" />
     </form>
     <h3>DexNav Test</h3>
     <form id="navForm" action="/dexNav" method="get">
-      <label for="navName">Name: </label>
+      <label for="name">Name: </label>
       <input id="navNameField" type="text" name="name"/>
       <select id='navUrlField'>
-        <option value='/dexNav'>/getTypes</option>
+        <option value='/dexNav'>/dexNav</option>
         <option value='/notReal'>/notReal</option>
       </select>
       <select id="navMethodSelect">
         <option value="get">GET</option>
         <option value="head">HEAD</option>
       </select>
-      <input type="submit" value="Get User" />
+      <input type="submit" value="Get Pokemon" />
+    </form>
+    <h3>CatchEm Test</h3>
+    <form id="ce" action="/catchEm" method="get">
+      <label for="name">Name: </label>
+      <input id="ceNameField" type="text" name="name"/>
+      <label for="type">Type: </label>
+      <input id="ceTypeField" type="text" name="type"/>
+      <label for="secType">Type: </label>
+      <input id="ceSecTypeField" type="text" name="secType"/>
+      <select id='ceUrlField'>
+        <option value='/catchEm'>/catchEm</option>
+        <option value='/notReal'>/notReal</option>
+      </select>
+      <select id="ceMethodSelect">
+        <option value="get">GET</option>
+        <option value="head">HEAD</option>
+      </select>
+      <input type="submit" value="Get Pokemon" />
     </form>
   </section>
   <section id="content">
