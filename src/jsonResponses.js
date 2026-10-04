@@ -101,17 +101,30 @@ const getTypes = (request,response) => {
   const reqURL = new URL(request.url, `http://${request.headers.host}`);
   const params = reqURL.searchParams;
   const type = params.get("type");
+  const secType = params.get("secType");
   //verifies request is a real type, the creates subset of entries including given type, otherwise return a 400 bad params
   if(!(typeList.includes(type.toLowerCase()))){
     responseJSON.id = 'failedParams';
      return responseHandler.serveFile(request, response, JSON.stringify(responseJSON), "application/json", 400);
   }
   let filteredDex = [];
+  let secondFilterDex = [];
   //creates proper string for filtering
   const properType = properNoun(type);
   console.log(properType);
   dex.forEach((element) => {if(element.type.includes(properType)){filteredDex.push(element)};});
-  return responseHandler.serveFile(request, response, JSON.stringify(filteredDex), "application/json", 200);
+  //handles optional second type filtering
+  if(secType != null){
+    const properSecType = properNoun(secType);
+    console.log(properSecType);
+    filteredDex.forEach((element) => {if(element.type.includes(properSecType)){secondFilterDex.push(element)};});
+    filteredDex = secondFilterDex;
+  }
+  if(filteredDex.length > 0){
+    return responseHandler.serveFile(request, response, JSON.stringify(filteredDex), "application/json", 200);
+  }
+  responseJSON.message = "No such Pokemon in the Pokedex.";
+  return responseHandler.serveFile(request, response, JSON.stringify(responseJSON), "application/json", 200);
 
 }
 

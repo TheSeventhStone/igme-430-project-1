@@ -62,10 +62,16 @@
       const url = typeForm.querySelector('#typeUrlField').value;
       const method = typeForm.querySelector('#typeMethodSelect').value;
       const type = typeForm.querySelector("#typeField").value;
+      const secType = typeForm.querySelector("#secTypeField").value;
+      console.log(secType.length);
 
       // /getUsers get or smthn like it
       console.log(url, method);
       let fullUrl = url+  `?type=${type.toLowerCase()}`;
+      if(secType.length > 0){
+        fullUrl += `&secType=${secType.toLowerCase()}`;
+      }
+      console.log(fullUrl);
 
       let response = await fetch(fullUrl, {
         method,
@@ -73,6 +79,8 @@
           'Accept': 'application/json'
         },
       });
+
+      
 
       // parse if get
       handleResponse(response, method === 'get');
@@ -157,6 +165,8 @@
      <form id="typeForm" action="/getTypes" method="get">
       <label for="type">Type: </label>
       <input id="typeField" type="text" name="type" />
+      <label for="secType">Type: </label>
+      <input id="secTypeField" type="text" name="secType" />
       <select id='typeUrlField'>
         <option value='/getTypes'>/getTypes</option>
         <option value='/notReal'>/notReal</option>
