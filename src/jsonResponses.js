@@ -128,6 +128,25 @@ const getTypes = (request,response) => {
 
 }
 
+const dexNav = (request,response) => {
+  const responseJSON = {
+    message: 'No such Pokemon in the Pokedex.',
+  };
+  //extracts search parameters from URL
+  const reqURL = new URL(request.url, `http://${request.headers.host}`);
+  const params = reqURL.searchParams;
+  const name = params.get("name");
+  console.log(name);
+
+  let filteredDex = [];
+  //filters dex entries for names containing name parameter (not case-sensitive)
+  dex.forEach((element) => {if(element.name.toLowerCase().includes(name.toLowerCase())){filteredDex.push(element);}});
+   if(filteredDex.length > 0){
+    return responseHandler.serveFile(request, response, JSON.stringify(filteredDex), "application/json", 200);
+  }
+  return responseHandler.serveFile(request, response, JSON.stringify(responseJSON), "application/json", 200);
+}
+
 const properNoun = (str) => {
   const firstLetter = str.charAt(0);
   const firstCap = firstLetter.toUpperCase();
@@ -139,5 +158,6 @@ const properNoun = (str) => {
 module.exports = {
   addUser,
   respondJSON,
-  getTypes
+  getTypes,
+  dexNav
 };

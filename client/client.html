@@ -65,7 +65,6 @@
       const secType = typeForm.querySelector("#secTypeField").value;
       console.log(secType.length);
 
-      // /getUsers get or smthn like it
       console.log(url, method);
       let fullUrl = url+  `?type=${type.toLowerCase()}`;
       if(secType.length > 0){
@@ -80,7 +79,25 @@
         },
       });
 
-      
+      // parse if get
+      handleResponse(response, method === 'get');
+    }
+
+    const requestNav = async (typeForm) => {
+      const url = typeForm.querySelector('#navUrlField').value;
+      const method = typeForm.querySelector('#navMethodSelect').value;
+      const name = typeForm.querySelector("#navNameField").value;
+
+      console.log(url, method);
+      let fullUrl = url+  `?name=${name.toLowerCase()}`;
+      console.log(fullUrl);
+
+      let response = await fetch(fullUrl, {
+        method,
+        headers: {
+          'Accept': 'application/json'
+        },
+      });
 
       // parse if get
       handleResponse(response, method === 'get');
@@ -141,6 +158,17 @@
       }
 
       typeForm.addEventListener("submit", types);
+
+      const navForm = document.querySelector("#navForm");
+
+      const navs = (e) => {
+        e.preventDefault();
+        requestNav(navForm);
+        return false;
+        
+      }
+
+      navForm.addEventListener("submit", navs);
     }
 
     window.onload = init;
@@ -172,6 +200,20 @@
         <option value='/notReal'>/notReal</option>
       </select>
       <select id="typeMethodSelect">
+        <option value="get">GET</option>
+        <option value="head">HEAD</option>
+      </select>
+      <input type="submit" value="Get User" />
+    </form>
+    <h3>DexNav Test</h3>
+    <form id="navForm" action="/dexNav" method="get">
+      <label for="navName">Name: </label>
+      <input id="navNameField" type="text" name="name"/>
+      <select id='navUrlField'>
+        <option value='/dexNav'>/getTypes</option>
+        <option value='/notReal'>/notReal</option>
+      </select>
+      <select id="navMethodSelect">
         <option value="get">GET</option>
         <option value="head">HEAD</option>
       </select>
