@@ -17,7 +17,7 @@ const urlStruct = {
     notFound: jsonHandler.respondJSON
 };
 
-const parseBody = (request, response) => {
+const parseBody = (request, response,fun) => {
     let body = '';
 
     request.on('error', (err) => {
@@ -44,7 +44,12 @@ const parseBody = (request, response) => {
             return response.end();
         }
         //jsonHandler.addUser(request, response);
-        jsonHandler.scanIn(request,response);
+        if(fun === jsonHandler.scanIn){
+            jsonHandler.scanIn(request,response);
+        }
+        else if(fun === jsonHandler.addEntry){
+            jsonHandler.addEntry(request,response);
+        }
     });
 }
 
@@ -61,7 +66,9 @@ const onRequest = (request, response) => {
         }
         if(parsedUrl.pathname === "/scanIn") {
             parseBody(request,response,jsonHandler.scanIn);
-            
+        }
+        if(parsedUrl.pathname === "/addEntry") {
+            parseBody(request,response,jsonHandler.addEntry);
         }
     } 
     else {

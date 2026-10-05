@@ -252,11 +252,41 @@ const scanIn = (request,response) => {
     return responseHandler.serveFile(request, response, "", "application/json", responseCode);
 }
 
+const addEntry = (request,response) => {
+  const {entry, pkmn} = request.body;
+   const responseJSON = {
+      message: 'Entry and Pokemon are both required. Must be an existing Pokemon.',
+    };
+
+    //checks if PKMN exists
+    const dexMon = nameFilter(pkmn)[0];
+    const inTheDex = dex.includes(dexMon);
+    if (!entry || !pkmn || !inTheDex) {
+      responseJSON.id = 'missingParams';
+      return responseHandler.serveFile(request, response, JSON.stringify(responseJSON), "application/json", 400);
+    }
+
+    let responseCode = 204;
+
+    //checks if PKMN has dex entry, changes responseCode accordingly
+    if(!dexMon.entry){
+      responseCode = 201;
+    }
+
+    dexMon.entry = entry;
+    
+    if (responseCode === 201) {
+      responseJSON.message = 'Created Successfully';
+      return responseHandler.serveFile(request, response, JSON.stringify(responseJSON), "application/json", responseCode);
+    }
+  
+    return responseHandler.serveFile(request, response, "", "application/json", responseCode);
+}
 const properNoun = (str) => {
   const firstLetter = str.charAt(0);
   const firstCap = firstLetter.toUpperCase();
   const restOfWord = str.slice(1);
-  return firstCap + restOfWord;
+  return firstCap + restOfWord.toLowerCase();
   
 }
 const typeFilter = (type,secType, set=dex) => {
@@ -291,4 +321,5 @@ module.exports = {
   dexNav,
   catchEm,
   scanIn,
+  addEntry
 };

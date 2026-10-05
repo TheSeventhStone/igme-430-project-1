@@ -168,6 +168,29 @@
       handleResponse(response, true);
     }
 
+    const sendEntry = async(entryForm) => {
+      const url = entryForm.getAttribute("action");
+      const method = entryForm.getAttribute("method");
+
+      const entry = entryForm.querySelector("#dexEntryField").value;
+      const pkmn = entryForm.querySelector("#dexMon").value;
+      console.log(entry);
+      
+      let formData = JSON.stringify({entry, pkmn});
+      const response = await fetch(url, {
+        method: method,
+        headers: {
+          'Content-Type': 'application/json',
+          'Content-Length': formData.length,
+          'Accept': 'application/json'
+        },
+        body: formData,
+      });
+
+      // parse if get
+      handleResponse(response, true);
+    }
+
     const init = () => {
       const getForm = document.querySelector('#cea');
       //const addForm = document.querySelector('#nameForm');
@@ -221,6 +244,16 @@
       }
       
       scanForm.addEventListener("submit", scans);
+
+      const entryForm = document.querySelector("#entryForm");
+
+      const entry = (e) => {
+        e.preventDefault();
+        sendEntry(entryForm);
+        return false;
+      }
+
+      entryForm.addEventListener("submit", entry);
     }
 
     window.onload = init;
@@ -310,6 +343,14 @@
        <label for="img">Image Link: </label>
       <input id="siImgField" type="text" name="img"/>
       <input type="submit" value="Add Pokemon" />
+    </form>
+    <h3>AddEntry test</h3>
+    <form id="entryForm" action="/addEntry" method="post">
+      <label for="entryMon"> Pokemon Name: </label>
+      <input id="dexMon" type="text" name="entryMon"/>
+      <label for="entry"> Entry Text: </label>
+      <input id="dexEntryField" type="text" name="entry"/>
+       <input type="submit" value="Add/Update Entry" />
     </form>
   </section>
   <section id="content">
