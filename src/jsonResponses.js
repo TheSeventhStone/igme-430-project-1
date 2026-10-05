@@ -200,10 +200,10 @@ const scanIn = (request,response) => {
     //number handling
     dex[dexIndex].num = `${num}`;
     if(num < 100){
-      num = "0" + num;
+      dex[dexIndex].num = "0" + num;
     }
     if(num < 10){
-      num = "0" + num;
+      dex[dexIndex].num = "0" + num;
     }
     //type handling
     if(secType){
@@ -223,7 +223,7 @@ const scanIn = (request,response) => {
     //weakness array creation
     if(weak){
       let weakArray = weak.replace(" ", "").split(",");
-      weakArray.forEach((element) => {element = properNoun(element);});
+      weakArray = weakArray.map(element => properNoun(element));
       dex[dexIndex].weaknesses = weakArray;
     }
 
