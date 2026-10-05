@@ -47,52 +47,52 @@ const respondJSON = (request, response) => {
 };
 
 
-const addUser = (request, response) => {
-  const {num, name, img, type, height, weight, weaknesses, next_evolution} = request.body;
+// const addUser = (request, response) => {
+//   const {num, name, img, type, height, weight, weaknesses, next_evolution} = request.body;
 
-  const responseJSON = {
-    message: 'Name and age are both required.',
-  };
+//   const responseJSON = {
+//     message: 'Name and age are both required.',
+//   };
 
-  if (!request.body.name || !request.body.num || !request.body.type ) {
-    responseJSON.id = 'missingParams';
-    return responseHandler.serveFile(request, response, JSON.stringify(responseJSON), "application/json", 400);
-  }
+//   if (!request.body.name || !request.body.num || !request.body.type ) {
+//     responseJSON.id = 'missingParams';
+//     return responseHandler.serveFile(request, response, JSON.stringify(responseJSON), "application/json", 400);
+//   }
 
-  let responseCode = 204;
+//   let responseCode = 204;
   
-  if (!dex[name]) {
-    responseCode = 201;
-    dex[name] = {};
-  }
+//   if (!dex[name]) {
+//     responseCode = 201;
+//     dex[name] = {};
+//   }
 
-  dex[name].name = name;
-  dex[name].num = num;
-  dex[name].type = type;
-  //Optional parameter fill-in
-  if(request.body.img){
-    dex[name].img = img;
-  }
-  if(request.body.height){
-    dex[name].height = height;
-  }
-  if(request.body.weight){
-    dex[name].weight = weight;
-  }
-  if(request.body.weaknesses){
-    dex[name].weaknesses = weaknesses;
-  }
-  if(request.body.next_evolution){
-    dex[name].next_evolution = next_evolution;
-  }
+//   dex[name].name = name;
+//   dex[name].num = num;
+//   dex[name].type = type;
+//   //Optional parameter fill-in
+//   if(request.body.img){
+//     dex[name].img = img;
+//   }
+//   if(request.body.height){
+//     dex[name].height = height;
+//   }
+//   if(request.body.weight){
+//     dex[name].weight = weight;
+//   }
+//   if(request.body.weaknesses){
+//     dex[name].weaknesses = weaknesses;
+//   }
+//   if(request.body.next_evolution){
+//     dex[name].next_evolution = next_evolution;
+//   }
 
-  if (responseCode === 201) {
-    responseJSON.message = 'Created Successfully';
-    return responseHandler.serveFile(request, response, JSON.stringify(responseJSON), "application/json", responseCode);
-  }
+//   if (responseCode === 201) {
+//     responseJSON.message = 'Created Successfully';
+//     return responseHandler.serveFile(request, response, JSON.stringify(responseJSON), "application/json", responseCode);
+//   }
 
-  return responseHandler.serveFile(request, response, "", "application/json", responseCode);
-};
+//   return responseHandler.serveFile(request, response, "", "application/json", responseCode);
+// };
 
 const getTypes = (request,response) => {
   const responseJSON = {
@@ -172,6 +172,86 @@ const catchEm = (request, response) => {
 
 }
 
+const scanIn = (request,response) => {
+  const {num, name, type, secType, height, weight, weak,evo,img} = request.body;
+  console.log(request.body);
+
+  console.log(name);
+  
+    const responseJSON = {
+      message: 'Number, name, and type are all required.',
+    };
+
+    if (!name || !num || !type) {
+      responseJSON.id = 'missingParams';
+      return responseHandler.serveFile(request, response, JSON.stringify(responseJSON), "application/json", 400);
+    }
+  
+    let responseCode = 204;
+    
+    //checks if already in dex
+    if (!dex.includes(nameFilter(name)[0])) {
+      responseCode = 201;
+       dex.push({name: name});
+      console.log(nameFilter(name)[0]);
+    }
+    let dexIndex = dex.length-1;
+    dex[dexIndex].name = properNoun(name);
+    //number handling
+    dex[dexIndex].num = `${num}`;
+    if(num < 100){
+      num = "0" + num;
+    }
+    if(num < 10){
+      num = "0" + num;
+    }
+    //type handling
+    if(secType){
+      dex[dexIndex].type = [properNoun(type), properNoun(secType)];
+    }
+    else{
+      dex[dexIndex].type = [properNoun(type)];
+    }
+    //optional param handling
+    if(height){
+      dex[dexIndex].height = `${height} m`;
+    }
+    if(weight){
+      dex[dexIndex].weight = `${weight} kg`;
+    }
+
+    //weakness array creation
+    if(weak){
+      let weakArray = weak.replace(" ", "").split(",");
+      weakArray.forEach((element) => {element = properNoun(element);});
+      dex[dexIndex].weaknesses = weakArray;
+    }
+
+    //evolution array creation - calls a nameFilter on dex, adds the object if results aren't empty
+    if(evo){
+      let evoNameArray = evo.replace(" ", "").split(",");
+      let evoArray = [];
+      evoNameArray.forEach((element) => {
+        let results = nameFilter(element);
+        if(results.length === 1){
+          evoArray.push(results[0]);
+        }
+      });
+      dex[dexIndex].next_evolution = evoArray;
+    }
+    if(img){
+      dex[dexIndex].img = img;
+    }
+
+
+    if (responseCode === 201) {
+      responseJSON.message = 'Created Successfully';
+      return responseHandler.serveFile(request, response, JSON.stringify(responseJSON), "application/json", responseCode);
+    }
+  
+    return responseHandler.serveFile(request, response, "", "application/json", responseCode);
+}
+
 const properNoun = (str) => {
   const firstLetter = str.charAt(0);
   const firstCap = firstLetter.toUpperCase();
@@ -203,10 +283,12 @@ const nameFilter = (name, set=dex) => {
   return filteredDex;
 }
 
+//quick checker for posting
+
 module.exports = {
-  addUser,
   respondJSON,
   getTypes,
   dexNav,
-  catchEm
+  catchEm,
+  scanIn,
 };

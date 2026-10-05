@@ -1,6 +1,7 @@
 const http = require('http');
 const htmlHandler = require('./htmlResponses.js');
 const jsonHandler = require('./jsonResponses.js');
+const { json } = require('stream/consumers');
 
 const port = process.env.PORT || process.env.NODE_PORT || 3000;
 
@@ -32,15 +33,18 @@ const parseBody = (request, response) => {
 
     request.on('end', () => {
         const type = request.headers['content-type'];
+        console.log(type);
         if (type === 'application/json') {
             request.body = JSON.parse(body);
+            //console.log(request.body);
         }
         else {
             response.writeHead(400, { 'Content-Type': 'application/json' });
             response.write(JSON.stringify({ error: 'invalid data format' }));
             return response.end();
         }
-        jsonHandler.addUser(request, response);
+        //jsonHandler.addUser(request, response);
+        jsonHandler.scanIn(request,response);
     });
 }
 
@@ -54,6 +58,10 @@ const onRequest = (request, response) => {
     if (request.method === 'POST') {
         if (parsedUrl.pathname === '/addUser') {
             parseBody(request, response, jsonHandler.addUser);
+        }
+        if(parsedUrl.pathname === "/scanIn") {
+            parseBody(request,response,jsonHandler.scanIn);
+            
         }
     } 
     else {

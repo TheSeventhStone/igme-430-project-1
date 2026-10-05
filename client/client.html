@@ -133,16 +133,26 @@
       handleResponse(response, method === 'get');
     }
 
-    const sendPost = async (nameForm) => {
-      const url = nameForm.getAttribute('action');
-      const method = nameForm.getAttribute('method');
+    const sendMon = async (scanForm) => {
+      const url = scanForm.getAttribute("action");
+      const method = scanForm.getAttribute("method");
 
-      const name = nameForm.querySelector('#nameField').value;
-      const age = nameForm.querySelector('#ageField').value;
+      const num = parseInt(scanForm.querySelector("#siNumField").value);
+      const name = scanForm.querySelector("#siNameField").value;
+      const type = scanForm.querySelector("#siTypeField").value;
+      const secType = scanForm.querySelector("#siSecTypeField").value;
+      const height = parseFloat(scanForm.querySelector("#siHeightField").value);
+      const weight = parseFloat(scanForm.querySelector("#siWeightField").value);
+      const weak = scanForm.querySelector("#siWeakField").value;
+      const evo = scanForm.querySelector("#siEvoField").value;
+      const img = scanForm.querySelector("#siImgField").value;
+      console.log(num);
+      console.log(name);
+      console.log(type);
 
-      let formData = JSON.stringify({ name, age });
+      let formData = JSON.stringify({num, name, type, secType, height, weight, weak,evo,img});
 
-      console.log(formData);
+      console.log("This is the form data:\n" + formData);
 
       const response = await fetch(url, {
         method: method,
@@ -154,6 +164,7 @@
         body: formData,
       });
 
+      // parse if get
       handleResponse(response, true);
     }
 
@@ -169,15 +180,6 @@
 
       getForm.addEventListener('submit', catchEmAll);
 
-      // const nameForm = document.querySelector('#nameForm');
-
-      // const addUser = (e) => {
-      //   e.preventDefault();
-      //   sendPost(nameForm);
-      //   return false;
-      // }
-
-      // nameForm.addEventListener('submit', addUser);
 
       const typeForm = document.querySelector("#typeForm");
 
@@ -209,6 +211,16 @@
       }
 
       catchForm.addEventListener("submit",catches);
+
+      const scanForm = document.querySelector("#scanForm");
+
+      const scans = (e) => {
+        e.preventDefault();
+        sendMon(scanForm);
+        return false;
+      }
+      
+      scanForm.addEventListener("submit", scans);
     }
 
     window.onload = init;
@@ -276,6 +288,28 @@
         <option value="head">HEAD</option>
       </select>
       <input type="submit" value="Get Pokemon" />
+    </form>
+    <h3>ScanIn Test</h3>
+    <form id="scanForm" action="/scanIn" method="post">
+      <label for="num">Pokedex Number: </label>
+      <input id="siNumField" type="text" name="num"/>
+      <label for="name">Name: </label>
+      <input id="siNameField" type="text" name="name"/>
+      <label for="type">Type: </label>
+      <input id="siTypeField" type="text" name="type"/>
+      <label for="secType">Type: </label>
+      <input id="siSecTypeField" type="text" name="secType"/>
+      <label for="weight">Weight (kg): </label>
+      <input id="siWeightField" type="text" name="weight"/>
+      <label for="height">Height (m): </label>
+      <input id="siHeightField" type="text" name="height"/>
+      <label for="weak">Weaknesses (comma separated values): </label>
+      <input id="siWeakField" type="text" name="weak"/>
+       <label for="evo">Evolutions (comma separated names): </label>
+      <input id="siEvoField" type="text" name="evo"/>
+       <label for="img">Image Link: </label>
+      <input id="siImgField" type="text" name="img"/>
+      <input type="submit" value="Add Pokemon" />
     </form>
   </section>
   <section id="content">
