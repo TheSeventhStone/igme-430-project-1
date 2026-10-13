@@ -2,6 +2,7 @@
 const dex = require("./pokedex.json");
 const responseHandler = require("./responses.js");
 
+//basic structure of reference types
 const  typeList = [
   "normal",
   "fire",
@@ -23,6 +24,7 @@ const  typeList = [
   "fairy"
 ];
 
+//handles bases cases of JSON response
 const respondJSON = (request, response) => {
   let content;
     let code;
@@ -46,54 +48,7 @@ const respondJSON = (request, response) => {
     responseHandler.serveFile(request, response, content, 'application/json', code);
 };
 
-
-// const addUser = (request, response) => {
-//   const {num, name, img, type, height, weight, weaknesses, next_evolution} = request.body;
-
-//   const responseJSON = {
-//     message: 'Name and age are both required.',
-//   };
-
-//   if (!request.body.name || !request.body.num || !request.body.type ) {
-//     responseJSON.id = 'missingParams';
-//     return responseHandler.serveFile(request, response, JSON.stringify(responseJSON), "application/json", 400);
-//   }
-
-//   let responseCode = 204;
-  
-//   if (!dex[name]) {
-//     responseCode = 201;
-//     dex[name] = {};
-//   }
-
-//   dex[name].name = name;
-//   dex[name].num = num;
-//   dex[name].type = type;
-//   //Optional parameter fill-in
-//   if(request.body.img){
-//     dex[name].img = img;
-//   }
-//   if(request.body.height){
-//     dex[name].height = height;
-//   }
-//   if(request.body.weight){
-//     dex[name].weight = weight;
-//   }
-//   if(request.body.weaknesses){
-//     dex[name].weaknesses = weaknesses;
-//   }
-//   if(request.body.next_evolution){
-//     dex[name].next_evolution = next_evolution;
-//   }
-
-//   if (responseCode === 201) {
-//     responseJSON.message = 'Created Successfully';
-//     return responseHandler.serveFile(request, response, JSON.stringify(responseJSON), "application/json", responseCode);
-//   }
-
-//   return responseHandler.serveFile(request, response, "", "application/json", responseCode);
-// };
-
+//Returns all Pokemon of selected type(s), minimum of one type required
 const getTypes = (request,response) => {
   const responseJSON = {
     message: 'Must be a real type.',
@@ -108,6 +63,7 @@ const getTypes = (request,response) => {
     responseJSON.id = 'failedParams';
      return responseHandler.serveFile(request, response, JSON.stringify(responseJSON), "application/json", 400);
   }
+  //calls typeFilter handler to create subset of filtered data, returns a No Results message if subset length is 0.
   let filteredDex = typeFilter(type,secType);
   if(filteredDex.length > 0){
     return responseHandler.serveFile(request, response, JSON.stringify(filteredDex), "application/json", 200);
@@ -117,6 +73,7 @@ const getTypes = (request,response) => {
 
 }
 
+//Searches for Pokemon in base dataset by name fragments.
 const dexNav = (request,response) => {
   const responseJSON = {
     message: 'No such Pokemon in the Pokedex.',
@@ -125,8 +82,8 @@ const dexNav = (request,response) => {
   const reqURL = new URL(request.url, `http://${request.headers.host}`);
   const params = reqURL.searchParams;
   const name = params.get("name");
-  console.log(name);
 
+  //calls nameFilter handler to create subset of filtered data
   let filteredDex = nameFilter(name);
    if(filteredDex.length > 0){
     return responseHandler.serveFile(request, response, JSON.stringify(filteredDex), "application/json", 200);
@@ -134,6 +91,7 @@ const dexNav = (request,response) => {
   return responseHandler.serveFile(request, response, JSON.stringify(responseJSON), "application/json", 200);
 }
 
+//Advanced search, combines functionality of above, but requires at least 1 of their given parameters.
 const catchEm = (request, response) => {
   const responseJSON = {
     message: 'No such Pokemon in the Pokedex.',
@@ -156,7 +114,6 @@ const catchEm = (request, response) => {
   }
   if (type != null && filteredDex.length == 0){
     filteredDex = typeFilter(type,secType);
-    console.log("second if failed");
   }
   //handles additional filters
   if(type != null){
@@ -172,11 +129,9 @@ const catchEm = (request, response) => {
 
 }
 
+//Adds a pokemon to the data set, requires at least number, name, and type
 const scanIn = (request,response) => {
-  const {num, name, type, secType, height, weight, weak,evo,img} = request.body;
-  console.log(request.body);
-
-  console.log(name);
+  let {num, name, type, secType, height, weight, weak,evo,img} = request.body;
   
     const responseJSON = {
       message: 'Number, name, and type are all required.',
@@ -252,6 +207,7 @@ const scanIn = (request,response) => {
     return responseHandler.serveFile(request, response, "", "application/json", responseCode);
 }
 
+//Adds entry property to pokemon based on name, FULL NAME IS REQUIRED
 const addEntry = (request,response) => {
   const {entry, pkmn} = request.body;
    const responseJSON = {
@@ -282,6 +238,8 @@ const addEntry = (request,response) => {
   
     return responseHandler.serveFile(request, response, "", "application/json", responseCode);
 }
+
+//converts given string into proper noun formatting (ex: testString --> Teststring)
 const properNoun = (str) => {
   const firstLetter = str.charAt(0);
   const firstCap = firstLetter.toUpperCase();
@@ -289,6 +247,7 @@ const properNoun = (str) => {
   return firstCap + restOfWord.toLowerCase();
   
 }
+//filters set based on typeList const, optional secondary type filtering.
 const typeFilter = (type,secType, set=dex) => {
    let filteredDex = [];
   let secondFilterDex = [];
@@ -306,6 +265,7 @@ const typeFilter = (type,secType, set=dex) => {
   return filteredDex;
 }
 
+//filters set based on name fragments.
 const nameFilter = (name, set=dex) => {
   let filteredDex = [];
   //filters dex entries for names containing name parameter (not case-sensitive)

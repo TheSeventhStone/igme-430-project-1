@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Documentation</title>
+    <link rel="stylesheet" type="text/css" href="/style.css">
+</head>
+<body>
+    <h1>/getTypes</h1>
+    <p>Gets all Pokemon of a specified type.</p>
+    <h2>Query parameters:</h2>
+    <h3>
+        <ul>
+            <li>type (required) - an offical Pokemon type to filter by.</li>
+            <li>secType (optional) - an offical Pokemon type to further filter by.</li>
+        </ul>
+    </h3>
+    <h2>Returns</h2>
+    <p>A JSON array of Pokemon. Format: [obj]</p>
+    <h2>Examples</h2>
+    <p>/getTypes?type=fire&secType=flying >>> [{pkm1 (Charizard)},{pkmn2 (Moltres)}]</p>
+    <p>/getTypes?type=grass >>> [{pkm1},{pkmn2},...{pkmn13}]</p>
+
+    <hr>
+
+    <h1>/catchEm</h1>
+    <p>Gets Pokemon meeting parameters</p>
+    <h2>Query parameters:</h2>
+    <h3>
+        <ul>
+            <li>type (required) - an offical Pokemon type to filter by.</li>
+            <li>secType (optional) - an offical Pokemon type to further filter by.</li>
+            <li>name (optional) - a name fragment to filter by.</li>
+        </ul>
+    </h3>
+    <h2>Returns</h2>
+    <p>A JSON array of Pokemon. Format: [obj]</p>
+    <h2>Examples</h2>
+    <p>/catchEm?name=saur >>> [{pkm1 (Bulbasaur)},{pkmn2 (Ivysaur)},{pkmn3 (Venusaur)}]</p>
+    <p>/getTypes?type=flying&name=char>>> [{pkm1 (Charizard)}]</p>
+
+    <hr>
+
+     <h1>/dexNav</h1>
+    <p>Gets Pokemon by name</p>
+    <h2>Query parameters:</h2>
+    <h3>
+        <ul>
+            <li>name (required) - a name fragment to filter by.</li>
+        </ul>
+    </h3>
+    <h2>Returns</h2>
+    <p>A JSON array of Pokemon. Format: [obj]</p>
+    <h2>Examples</h2>
+    <p>/dexNav?name=saur >>> [{pkm1 (Bulbasaur)},{pkmn2 (Ivysaur)},{pkmn3 (Venusaur)}]</p>
+    <p>/getTypes?name=Agumon >>> Message: No such Pokemon in the Pokedex</p>
+
+    <hr>
+
+    <h1>/catchEmAll</h1>
+    <p>Gets all available Pokemon</p>
+    <h2>Query parameters:</h2>
+    <h3>
+        No supported parameters
+    </h3>
+    <h2>Returns</h2>
+    <p>A JSON array of Pokemon. Format: [obj]</p>
+    <h2>Examples</h2>
+    <p>/catchEmAll >>> [{pkm1},{pkmn2},...{pkmn151}]</p>
+
+    <hr>
+
+    <h1>/scanIn</h1>
+    <p>Adds a new Pokemon to the Pokedex API</p>
+    <h2>Accepted Formats</h2>
+    <p>application/json</p>
+    <h2>Body parameters:</h2>
+    <h3>
+        <ul>
+            <li>num (required) - number</li>
+            <li>name (required) - string</li>
+            <li>img (optional, publicly hosted image URL of pokemon) - string</li>
+            <li>type (required,max 2) - string[]</li>
+            <li>height (optional, in meters) - number</li>
+            <li>weight (optional, in kilograms) - number</li>
+            <li>weak (optional, comma-separated values) - string</li>
+            <li>evo (optional, next evolution(s) of pokemon) - Object[{name,num}]</li>
+
+        </ul>
+    </h3>
+    <h2>Returns</h2>
+    <p>Nothing returned</p>
+    
+    <hr>
+    <h1>/addEntry</h1>
+    <h2>Accepted Formats</h2>
+    <p>application/json</p>
+    <p>Adds/updates a pokedex entry for the Pokemon</p>
+    <h2>Body parameters:</h2>
+    <h3>
+        <ul>
+            <li>entry (required) - string</li>
+            <li>name (required) - string</li>
+        </ul>
+    </h3>
+    <h2>Returns</h2>
+    <p>Nothing returned</p>
+    <a href="/">Back</a>
+</body>
+</html>

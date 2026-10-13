@@ -7,12 +7,13 @@ const port = process.env.PORT || process.env.NODE_PORT || 3000;
 
 // key:value object to look up URL routes to specific functions
 const urlStruct = {
-   '/': htmlHandler.getIndex,
+    '/': htmlHandler.getIndex,
+    '/docs' : htmlHandler.getDocs,
     '/style.css': htmlHandler.getCSS,
     '/catchEmAll': jsonHandler.respondJSON,
     '/notReal': jsonHandler.respondJSON,
     "/getTypes": jsonHandler.getTypes,
-    "/dexNav": jsonHandler.dexNav,
+    "/dexNav": jsonHandler.dexNav,  
     "/catchEm": jsonHandler.catchEm,
     notFound: jsonHandler.respondJSON
 };
@@ -38,6 +39,16 @@ const parseBody = (request, response,fun) => {
             request.body = JSON.parse(body);
             //console.log(request.body);
         }
+        //if urlencoded, convert to JSON body
+        else if (type === "application/x-www-form-urlencoded"){
+            console.log(body);
+            const preBody= new URLSearchParams(body);
+            console.log(preBody);
+            const jsonedBody = Object.fromEntries(preBody);
+            const stringBody = JSON.stringify(jsonedBody);
+            request.body = JSON.parse(stringBody);
+            console.log(request.body);
+        }
         else {
             response.writeHead(400, { 'Content-Type': 'application/json' });
             response.write(JSON.stringify({ error: 'invalid data format' }));
@@ -59,11 +70,9 @@ const onRequest = (request, response) => {
     const protocol = request.connection.encrypted ? 'https' : 'http';
     const parsedUrl = new URL(request.url, `${protocol}://${request.headers.host}`);
     console.log('++++++++URL: ' + parsedUrl.href);
+    console.log(request.headers["content-type"]);
 
     if (request.method === 'POST') {
-        if (parsedUrl.pathname === '/addUser') {
-            parseBody(request, response, jsonHandler.addUser);
-        }
         if(parsedUrl.pathname === "/scanIn") {
             parseBody(request,response,jsonHandler.scanIn);
         }
